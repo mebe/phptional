@@ -35,7 +35,7 @@ class PHPtional_Client
 
     public function handleException($exception)
     {
-        $this->exceptions[] = new PHPtional_Data($exception);
+        $this->exceptions[] = new PHPtional_Exception($exception);
         if($this->decoratedHandler) {
             $this->decoratedHandler();
         }
@@ -46,7 +46,8 @@ class PHPtional_Client
     public function __destruct()
     {
         foreach($this->exceptions as $exception) {
-            $this->post('errors', $body = $exception->toEscapedZlibbedJson());
+            $this->post('errors', $exception->toEscapedZlibbedJson());
+            //$this->post('errors', $exception->toJson());
         }
     }
 
@@ -86,14 +87,13 @@ class PHPtional_Client
             $response .= fgets($s);
         }
 
-         print($response);
-         
-//        print($request);
-        
+        print($response);
+        //print($request);
+
     }
 }
 
-class PHPtional_Data
+class PHPtional_Exception
 {
     public function __construct($exception)
     {
@@ -106,13 +106,13 @@ class PHPtional_Data
         }
         $this->exception_message = $exception->getMessage();
         $this->exception_backtrace = explode("\n", $exception->getTraceAsString());
-        $this->occured_at = date('Ymd H:i:s e'); // PHP formatting is slightly different from Ruby
+        $this->occured_at = date('Ymd H:i:s T'); // PHP formatting is slightly different from Ruby
         $this->controller_name = $trace['class']; // Let's use the failed class
         $this->action_name = $trace['function']; // Let's use the failed function
         $this->application_root = $_SERVER['DOCUMENT_ROOT']; // Document root will do
         $this->url = $this->getCurrentUrl();
         $this->parameters = $_GET + $_POST;
-        $this->session = $_SESSION;
+        //$this->session = $_SESSION;
         $this->environment = $_SERVER; // Rails's request.env is equivalent
     }
 
@@ -140,9 +140,9 @@ Accept: application/x-gzip
 User-Agent: phptional 0.0
 Content-Type: application/x-gzip
 Connection: close
-Content-Length: 2546
+Content-Length: 2358
 
-x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%AC%D1J%22%01%96%C2%CA%91%EB%F1%7F%EF%5D%84d%C9%89%FB%A1%9D%CEH%B0%9C%FB8%E7%5E%EE.%8FZ%C2%B2%E5%9A-%B9%D6%D3%A6%E3%A9%D6%D0%F8%26%E2%B9%8CE%16F%09%2BK%AD%B7%60I%C9%0F%F1%94%97%E56%82%AC%E2%12%C1%2F%2F%B8%94%0F%28%E3L%FEp%94%E2%8EE_d%C1%22%E5%FC%A6%85%EC%1E%A5%B3%92%17%25%A5%D6%3C%8D%B3%B8%04%A3%14%05%A5%03%11%ADS%9EI%B0L%1E%D0%A0%10%F9%9D%D8P%3A-%C4g%1E%294_U%19YB%A9%E4%A5%D4%E1%F9%C4%EC%9E%F6%D0P%88%E6%FB%3BV%9C%9C%D2%EC%8D%89%1ES%16gO+BD%D1%BA%E0%F3%90I%E0%BEM%E7h%DC%8B%7B%25%E2%60%8AD%26%0B%91%24%BC%083%96%2Am%90%04p%16U%A2k%0Cr%2A%2C%CF%938b%95%A1%10B%25%83%2A%8Cm%15%C6q%15%C6s%15%C6A%15%C6%AE%0AH%B7.%12%C8%B0%922%87%24%D4HD%C4%92%95%28%255%9E%0B4v%05%82%7F%CE%0AP%23%81L%EB%FD%FEGC%2B%A1%F7%E0%A5%F5%B2u%92%40%A7%B3%FB%B8%10%99%E2%D4z%8F%DA%98%90i8%0B%B0%1FZ%23%EC%12%60%F2r%5E0jt%F5%8B6%3A%B9%89%B3%B9%F8Z%22%97%A0%0B%BD%D5G%B3%3E%E2%D9%29%9A%16%C0%27%A8%D1%D6M%DD%04%CE%2A%CB%D8%0BT%FC%5E%E0%0E%B7l%1BO%95E%F2%0D%A8%5E%C94i%A0%83%26Qc%93%26%FD%3F%7Fn%E9%DD%97%B8%F2%FDq%A3%FC%E3%14%E6%07J%CE%96%FB%F5%E7%9C%3F%3F%2C%E3%C5%7E%BDin%EEb%99%B2%BC%81%DER%E3m%95%DA%3CV%13%5EY%EEh%06%25%83%ACE%DC%1C%3A%8DE%5CK%E0Y%B5%E8%BC%08%B0%C7%96%1F%60UF%5C%8Af%A7s%DEm%9A%0D%B4%96%8Bfg%7B3%2F%80%EE%BB%5C%D8%B5%BD%81%E3%8E+v%CE%17%09%93%BC%81%96%7F%C5+o%D3%DC%DE%E39%BC%8EX%3E%D4%19v%F1%B6e%8Fqh%7B.%F1%BD%2B%88%CED3b%D1%8A%EF%ED%9E%EBb%9B8%9E%0B%C6%8F%9C%E7M%2B%89%EF%21%3B%C1%3B%17%82%BFe%8DV%EB%EC%0B%9F%1F%D2%C28%C6%89%1A%99%866%B5%C8x%3B%B2%B4%7E%FB%94%96%0F%A5%E4%E9Y%BB%7F%80%F6%8F%3C%82%DA%03%A0%3B%9EB%9A-%E0%EF%E7%7F%E7%0A%26%DB%9B%04Sl%BFFBi%94%CEu%BE%E1%B5%18%FCIu%5D%87%A8%BE%8E%3F%E1%BE%FE%C1%22%7D%DD%9E%0C%FA%FA%F5%87%40%5D%00%FB5P%7FX%DC%04Cu%19%F7%F5I%60C%86%1B%C7%1D8%FE7%1A%60%E2%AFa%E8%03g%E4Zd%E6%AB.%BDc%F39%CCu%F9%DE%CAU%93%D5t%B7%F5n%B5%07%CE%DA%A7h%60%5D%03%84R1%0F%CB2%D9Ya%B7dApE%0D%18%1D%BD%13Wf%B6%96%02%88%F8%26%8CD%22%0A%04%A7%245%CE%C1%FD%02%05%BC%B8%E7%05b%12%ED%B7%09%9A%8AB%A2N%EB%1D5v%02hv%A0%D0%1B%92%1B%AB%12%F8%FF%E9z%A6s%AD%09%7E%B1%89k%8B5%18%A86%9A%EDK%BD%A5o%87%BC%B6L%3D_%BD%A1%8E%9A%5B%1FO%3C%82%BF%E7%3C%F0%EC%D9%04%8E%98%D0%F7%3C%F2%1F%CF%C4%BD%A4%89%A3F%9F%A9%F8_%8E4%DB%BE%03%3Bo%E8%5C%E1%BA%A2%7FM%F7%DA9%5BWZ%17%7Fq%FE%D3%E59%A0%23%8B%E0%1B%EB6t%5C%82%FD%A1eW%D4%23%87%1A%E6Q%C7%7C%8Fxv%B5%A7%D5.%DDY%7D%FC%DB%0C%07%24%9C%602%F6%06%60%1C%C1%81%D3%D0%00%F4o%C3%80%F8%DB3%E4%C0q%E6%3B%00%BC%A6%B0nB%DD%80%D7%BC%60%0A%C2%00_%0D%FF%C1eGG%1C%95%C9l%B7%BB%ADK%F3%AC%D3%82o%5D%B1%BC%DF%7Ef%60%15i%BD%D6%D3%D3%DF%FF%08%92%80
+x%9C%9DUms%A2H%10%FE%2B%9C%FBE%F7%947%8D%82%96wG%E1%A8%D4%2A%B8%BC%24%B7ulQ%13%9CD.%C0%B00%E6Lr%F9%EF%DB%83%9A%E8nn%EF%EAJ%0A%86%E7%E9%7E%BA%7B%E8i%9F%1A%29%CEo%B7%F8%964%86%8D%D5%7C%D5h7%C8.%26%05Kh%1E%C5%29%AE%2A%C0%D1%119c3RU%7B%3F%7F%93T%02%5CEI%18%7B%10r%82%D9Og%A6%D78%BEc%25%8E%C1%F8%8F%C6%3BY%08%A5%A0%22e%15JI%1EJ%93%92%16%D7t%17J%AB%92%FEIb%06p%B1%A9%FDp%1AJ%8CTL%84%F7%A6%A2%B7%86%C2%94%D2%CE%2F%D7%B8l%B6%40%FF%9D%22%3Ce8%C9%9F%1B%9F%DB%0D%1A%C7%DB%92%AC%23%CC+%21U%965EUTA%E9%0Ee%B8z%02B%3Ex%C44g%25MSRF9%CEx%EA+%088%8E%EB4%0F%18%E8s%AC%28%D2%24%C65QR%CAe%7F%9C6%F8l%CB%14%CC6%8C%15%C3P%0A%25EWE%A5%AF%89pW%FAoV%F5%EBu%8A%CB%DB%CD%98%DF%C0%BF%C0%25%A4%C0+Fc%F8%D4%D8s+X%3F%9EaC%F3%FB%A4%A4yFr%C6%F9%B9%EF%AF%A2%B9%E3%F9%60r%16%0A%94j.%F0%90%1B%193ds%8B%25%7DL%D2%14%87%D2%85%28%0B%CD%AB%24_%D3%BF%AA%91%10%8C%84%C3Z%B0%7D%A1%2F%CA%23%81%E4%9D%C0%1B%09%E5%FDP%11uQ%16%7B-aF%E2%3B%1AJ%F5%BE%CA%AA%AE%CA%C24%29%C9%0D%2F%BF%CB-%8E%11%0D%D3D%2B%1E%8D%91%1D%0B%A5%0D%CB%D2%F6%C9F%86%D2%8EC%3F%EF%BE%83%B3t%F4e%2C%8Bz%FB%7D%28%BD%AF%97%DA%B9f%B40%ECY%00%C5%808%24%B8%AD%DA%24%AF%ED.%BE%B1C%B6%E9L%2C%7B%06v%B7%8FI%D1%5E%93%9B%143%F2%8D%9597%5C%0F%F1L-%CF%E9h%DA%85%DEQ%DA%5Bv%D3%D1j%D1A%7B%9F%C4%E0%E8%F6%01%21%F0%5DX%97%3C%7EW%96%8F%B8%E9%D862%7D%CB%B1%01%BF%23%A4%E8%E04%B9%27%AF%B4%F3%C1%E2.Q%B4e%19%1E%2B%BA%D2%1F%E8%B2%A6%8Az%B7%3B%E8%EB%5D%AD%A7%F5%E0%DE%EF%C9%B2%A8%A8%2At%AD%0C%C9%D4K%1D%16%3De%BF%D4%7B%3A%7C%E0%C1H%A8u%1EOtN%9D%E0%07l%5C%95%E3%E6%1A%3EO%CCZ%7F%F3%F78%3F%7F%CF%D6%E3fNs%D2z%C9%D20%E7%88%97%E2%BB%CE%02%92%CD%F0%AE%03%27%7B%CC%AB%5C%19%FE%BCn%FDmU%86RJc%DE%BE%D9C%F5%05%1E%D7I%0E%7DN%0B%F6B%7C%8FT%7B%A8%F6%DE%2FO%80%03yjs%26T%23%BF%2BJ%FD%0E%C9%40%3F_BK%7B%D6%CC6%FC%C0%E5%1B%7B%82%3AS%FF%CA%A8A%A3%C0%F1%86%40%BF%C2y%D0%84f%90%27%BB%96%90%D1uTU%E9%11u%0A%92%7B%DE%22%94%A0%EB%C4A%2AL%8CK%A0%04%98%81%FC%88%A8b%FFU%D96%96%E8%8D3v%60%8D%C9%C4%FDgv%E5%B8%BC%CB4%BE%97.Z%3A%3Ez%CBA%01v%E2%98%C1%12%CEj%E4%3A%8E%FF_%A6%CDK%FC%A5%C5%BB%EF%81n%7F%23%3B%9C%15%29%11c%9Aq%03%D3%B5%A0%D7%A7%D6%02%1DJ%F8%1F%83%F75%EFC%29%17%EA%40%E6%F9%CE%0C%1F%5D%19%9F%22%CB%F6%91%3B5L%AEo%CE%2C%18%7B%A2rR%BF%EB%F8%8EY%B7%15%EF%B5%23%EB%A2%8F%01%F2%FCh%89%FC%B93%01rV%0Fh%00%DDO%91%E7%BB%FB%03%7C%3E%1D%8F%3E%81k%D5%A5%FC%FB%3C%3Dl%C0K%F1o%97%07%9F%3C%F2%D0b%FA%03%93ch%DF%E2Jp%E6ty%A0%0F%B4%5E%9B%CF%E6%7B%FE%AFv%1A%F8s%0D%C7%60%F8%FC%FC%15XW%3C%B0
 */
 
 /*
@@ -151,55 +151,51 @@ x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%A
     "exception_class": "Exception",
     "exception_message": "This is pretty neat!",
     "exception_backtrace": [
-        "#0 C:\\Users\\Administrator\\Documents\\My Dropbox\\Projects\\phptional\\test.php(19): Foo->bar()",
+        "#0 \/Users\/in\/Dropbox\/Projects\/phptional\/test.php(19): Foo->bar()",
         "#1 {main}"
     ],
-    "occured_at": "20081212 11:01:53 Europe\/Helsinki",
+    "occured_at": "20081212 13:03:04 EET",
     "controller_name": "Foo",
     "action_name": "bar",
-    "application_root": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects",
-    "url": "http:\/\/localhost\/phptional\/test.php",
-    "parameters": [
-
-    ],
-    "session": null,
+    "application_root": "\/Users\/in\/Dropbox\/Projects",
+    "url": "http:\/\/192.168.2.116\/phptional\/test.php?blargh=argh",
+    "parameters": {
+        "blargh": "argh"
+    },
     "environment": {
-        "HTTP_USER_AGENT": "Opera\/9.62 (Windows NT 6.0; U; en) Presto\/2.1.1",
-        "HTTP_HOST": "localhost",
-        "HTTP_ACCEPT": "text\/html, application\/xml;q=0.9, application\/xhtml+xml, image\/png, image\/jpeg, image\/gif, image\/x-xbitmap, *\/*;q=0.1",
-        "HTTP_ACCEPT_LANGUAGE": "fi-FI,fi;q=0.9,en;q=0.8",
-        "HTTP_ACCEPT_CHARSET": "iso-8859-1, utf-8, utf-16, *;q=0.1",
-        "HTTP_ACCEPT_ENCODING": "deflate, gzip, x-gzip, identity, *;q=0",
-        "HTTP_CACHE_CONTROL": "no-cache",
-        "HTTP_CONNECTION": "Keep-Alive, TE",
-        "HTTP_TE": "deflate, gzip, chunked, identity, trailers",
-        "PATH": "C:\\Windows\\system32;C:\\Windows;C:\\Windows\\System32\\Wbem",
-        "SystemRoot": "C:\\Windows",
-        "COMSPEC": "C:\\Windows\\system32\\cmd.exe",
-        "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC",
-        "WINDIR": "C:\\Windows",
-        "SERVER_SIGNATURE": "<address>Apache\/2.2.9 (Win32) DAV\/2 mod_ssl\/2.2.9 OpenSSL\/0.9.8i mod_autoindex_color PHP\/5.2.6 Server at localhost Port 80<\/address>\n",
-        "SERVER_SOFTWARE": "Apache\/2.2.9 (Win32) DAV\/2 mod_ssl\/2.2.9 OpenSSL\/0.9.8i mod_autoindex_color PHP\/5.2.6",
-        "SERVER_NAME": "localhost",
-        "SERVER_ADDR": "127.0.0.1",
+        "HTTP_HOST": "192.168.2.116",
+        "HTTP_USER_AGENT": "Mozilla\/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.4) Gecko\/2008102920 Firefox\/3.0.4",
+        "HTTP_ACCEPT": "text\/html,application\/xhtml+xml,application\/xml;q=0.9,*\/*;q=0.8",
+        "HTTP_ACCEPT_LANGUAGE": "en-us,en;q=0.5",
+        "HTTP_ACCEPT_ENCODING": "gzip,deflate",
+        "HTTP_ACCEPT_CHARSET": "ISO-8859-1,utf-8;q=0.7,*;q=0.7",
+        "HTTP_KEEP_ALIVE": "300",
+        "HTTP_CONNECTION": "keep-alive",
+        "HTTP_COOKIE": "__utma=191679082.933769384849386400.1228120885.1228988541.1228994992.7; __utmz=191679082.1228120885.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)",
+        "HTTP_CACHE_CONTROL": "max-age=0",
+        "PATH": "\/usr\/local\/mysql\/bin:\/opt\/local\/bin:\/opt\/local\/sbin:\/usr\/bin:\/bin:\/usr\/sbin:\/sbin:\/usr\/local\/bin:\/usr\/X11\/bin",
+        "SERVER_SIGNATURE": "",
+        "SERVER_SOFTWARE": "Apache\/2.2.8 (Unix) mod_ssl\/2.2.8 OpenSSL\/0.9.7l DAV\/2 PHP\/5.2.6",
+        "SERVER_NAME": "192.168.2.116",
+        "SERVER_ADDR": "192.168.2.116",
         "SERVER_PORT": "80",
-        "REMOTE_ADDR": "127.0.0.1",
-        "DOCUMENT_ROOT": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects",
-        "SERVER_ADMIN": "admin@localhost",
-        "SCRIPT_FILENAME": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects\/phptional\/test.php",
-        "REMOTE_PORT": "49475",
+        "REMOTE_ADDR": "192.168.2.111",
+        "DOCUMENT_ROOT": "\/Users\/in\/Dropbox\/Projects",
+        "SERVER_ADMIN": "you@example.com",
+        "SCRIPT_FILENAME": "\/Users\/in\/Dropbox\/Projects\/phptional\/test.php",
+        "REMOTE_PORT": "52701",
         "GATEWAY_INTERFACE": "CGI\/1.1",
         "SERVER_PROTOCOL": "HTTP\/1.1",
         "REQUEST_METHOD": "GET",
-        "QUERY_STRING": "",
-        "REQUEST_URI": "\/phptional\/test.php",
+        "QUERY_STRING": "blargh=argh",
+        "REQUEST_URI": "\/phptional\/test.php?blargh=argh",
         "SCRIPT_NAME": "\/phptional\/test.php",
         "PHP_SELF": "\/phptional\/test.php",
-        "REQUEST_TIME": 1229072513,
+        "REQUEST_TIME": 1229079784,
         "argv": [
-
+            "blargh=argh"
         ],
-        "argc": 0
+        "argc": 1
     }
 }
 */
