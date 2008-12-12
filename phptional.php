@@ -73,7 +73,7 @@ class PHPtional_Client
             $request .= "Content-Length: 0\r\n\r\n";
         }
 
-        /*$s = fsockopen($this->options['host'], $this->options['port'], $errno, $errstr);
+        $s = fsockopen($this->options['host'], $this->options['port'], $errno, $errstr);
         if(!$s) {
             echo "$errno: $errstr\n";
             return false;
@@ -86,9 +86,9 @@ class PHPtional_Client
             $response .= fgets($s);
         }
 
-         print($response);*/
+         print($response);
          
-        print($request);
+        //print($request);
         
     }
 }
@@ -103,7 +103,7 @@ class PHPtional_Data
         $this->exception_class = get_class($this->exception);
         $this->exception_message = $exception->getMessage();
         $this->exception_backtrace = $exception->getTraceAsString();
-        $this->occured_at = 'Ymd H:i:s e'; // PHP formatting is slightly different from Ruby
+        $this->occured_at = date('Ymd H:i:s e'); // PHP formatting is slightly different from Ruby
         $this->controller_name = $trace['class']; // Let's use the failed class
         $this->action_name = $trace['function']; // Let's use the failed function
         $this->application_root = $_SERVER['DOCUMENT_ROOT']; // Document root will do
@@ -148,7 +148,7 @@ x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%A
     "exception_class": false,
     "exception_message": "This is pretty neat!",
     "exception_backtrace": "#0 C:\\Users\\Administrator\\Documents\\My Dropbox\\Projects\\phptional\\test.php(19): Foo->bar()\n#1 {main}",
-    "occured_at": "Ymd H:i:s e",
+    "occured_at": "20081212 10:48:13 Europe\/Helsinki",
     "controller_name": "Foo",
     "action_name": "bar",
     "application_root": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects",
