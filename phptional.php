@@ -23,7 +23,7 @@ class PHPtional_Client
         $options += array(
             'host' => 'getexceptional.com',
             'ssl' => false,
-            'port' => 80,
+            'port' => 80
         );
         $this->options = $options;
         $this->api_key = $api_key;
@@ -118,7 +118,7 @@ class PHPtional_Data
         return json_encode($this);
     }
     public function toEscapedZlibbedJson() {
-        return urlencode(gzcompress($this->toJson()));
+        return gzcompress($this->toJson());
     }
 
     private function getCurrentUrl()
