@@ -88,7 +88,7 @@ class PHPtional_Client
 
          print($response);
          
-        //print($request);
+//        print($request);
         
     }
 }
@@ -101,8 +101,11 @@ class PHPtional_Data
 
         $this->language = 'PHP';
         $this->exception_class = get_class($this->exception);
+        if ($this->exception_class === false) {
+            $this->exception_class = 'Exception';
+        }
         $this->exception_message = $exception->getMessage();
-        $this->exception_backtrace = $exception->getTraceAsString();
+        $this->exception_backtrace = explode("\n", $exception->getTraceAsString());
         $this->occured_at = date('Ymd H:i:s e'); // PHP formatting is slightly different from Ruby
         $this->controller_name = $trace['class']; // Let's use the failed class
         $this->action_name = $trace['function']; // Let's use the failed function
@@ -145,10 +148,13 @@ x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%A
 /*
 {
     "language": "PHP",
-    "exception_class": false,
+    "exception_class": "Exception",
     "exception_message": "This is pretty neat!",
-    "exception_backtrace": "#0 C:\\Users\\Administrator\\Documents\\My Dropbox\\Projects\\phptional\\test.php(19): Foo->bar()\n#1 {main}",
-    "occured_at": "20081212 10:48:13 Europe\/Helsinki",
+    "exception_backtrace": [
+        "#0 C:\\Users\\Administrator\\Documents\\My Dropbox\\Projects\\phptional\\test.php(19): Foo->bar()",
+        "#1 {main}"
+    ],
+    "occured_at": "20081212 11:01:53 Europe\/Helsinki",
     "controller_name": "Foo",
     "action_name": "bar",
     "application_root": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects",
@@ -181,7 +187,7 @@ x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%A
         "DOCUMENT_ROOT": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects",
         "SERVER_ADMIN": "admin@localhost",
         "SCRIPT_FILENAME": "C:\/Users\/Administrator\/Documents\/My Dropbox\/Projects\/phptional\/test.php",
-        "REMOTE_PORT": "65482",
+        "REMOTE_PORT": "49475",
         "GATEWAY_INTERFACE": "CGI\/1.1",
         "SERVER_PROTOCOL": "HTTP\/1.1",
         "REQUEST_METHOD": "GET",
@@ -189,7 +195,7 @@ x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%A
         "REQUEST_URI": "\/phptional\/test.php",
         "SCRIPT_NAME": "\/phptional\/test.php",
         "PHP_SELF": "\/phptional\/test.php",
-        "REQUEST_TIME": 1229071458,
+        "REQUEST_TIME": 1229072513,
         "argv": [
 
         ],
@@ -197,9 +203,3 @@ x%9C%B5Uks%9BF%14%FD%2B%5B%F2%C5N%25%10rm%EB%91fJ%D0J%A2%B1%40%85%95%1DO%B7%C3%A
     }
 }
 */
-
-
-
-
-
-
